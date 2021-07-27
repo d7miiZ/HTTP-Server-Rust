@@ -24,7 +24,9 @@ impl Server {
                         Ok(_) => {
                             println!("Request: {}", String::from_utf8_lossy(&buffer));
                             match request::Request::try_from(&buffer[..]) {
-                                Ok(request) => {}
+                                Ok(request) => {
+                                    dbg!("{}", request);
+                                }
                                 Err(err) => {
                                     println!("{}", err)
                                 }

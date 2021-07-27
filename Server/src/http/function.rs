@@ -1,6 +1,7 @@
 use std::str::FromStr;
 use super::request::RequestError;
 
+#[derive(Debug)]
 pub enum Function {
     GET,
     HEAD,

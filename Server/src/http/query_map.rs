@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::convert::From;
 
+#[derive(Debug)]
 pub struct Query<'buf_life> {
     map: HashMap<&'buf_life str, Value<'buf_life>>,
 }
@@ -11,6 +12,7 @@ impl<'buf_life> Query<'buf_life> {
     }
 }
 
+#[derive(Debug)]
 pub enum Value<'buf_life> {
     Single(&'buf_life str),
     Many(Vec<&'buf_life str>),

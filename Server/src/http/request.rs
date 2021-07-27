@@ -5,6 +5,7 @@ use std::error::Error;
 use std::fmt::{Debug, Display, Formatter, Result as FmtRes};
 use std::str;
 
+#[derive(Debug)]
 pub struct Request<'buf_life> {
     function: Function,
     path: &'buf_life str,
