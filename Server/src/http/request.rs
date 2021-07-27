@@ -1,8 +1,8 @@
 use super::function::Function;
 use std::convert::TryFrom;
 use std::error::Error;
-use std::str;
 use std::fmt::{Debug, Display, Formatter, Result as FmtRes};
+use std::str;
 
 pub struct Request {
     function: Function,
@@ -21,8 +21,28 @@ impl TryFrom<&[u8]> for Request {
 
     fn try_from(buffer: &[u8]) -> Result<Self, Self::Error> {
         let request = str::from_utf8(buffer).or(Err(RequestError::InvalidEncoding))?;
+
+        let (function , rest_of_request) = explode(request, ' ').ok_or(RequestError::InvalidRequest)?;
+        let (path_and_query , rest_of_request) = explode(rest_of_request, ' ').ok_or(RequestError::InvalidRequest)?;
+        let (protocol , _) = explode(rest_of_request, ' ').ok_or(RequestError::InvalidRequest)?;
+
+        if protocol != "HTTP/1.1"{
+            return Err(RequestError::InvalidProtocol);
+        }
+
+        let function: Function = function.parse()?;
+
         unimplemented!()
     }
+}
+
+fn explode(text: &str, sep: char) -> Option<(&str, &str)> {
+    for (index, letter) in text.chars().enumerate() {
+        if letter == sep || letter == '\r'{
+            return Some((&text[..index - 1], &text[index + 1..]));
+        }
+    }
+    return None;
 }
 
 pub enum RequestError {
