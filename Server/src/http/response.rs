@@ -1,5 +1,4 @@
 use std::io::Write;
-use std::net::TcpStream;
 
 #[derive(Debug)]
 pub enum Status {
