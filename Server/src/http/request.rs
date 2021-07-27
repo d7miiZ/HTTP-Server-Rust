@@ -1,4 +1,5 @@
 use super::function::Function;
+use super::query_map::Query;
 use std::convert::TryFrom;
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter, Result as FmtRes};
@@ -7,7 +8,7 @@ use std::str;
 pub struct Request<'buf_life> {
     function: Function,
     path: &'buf_life str,
-    query: Option<&'buf_life str>,
+    query: Option<Query<'buf_life>>,
 }
 
 // impl <'buf_life> Request<'buf_life> {
@@ -16,7 +17,7 @@ pub struct Request<'buf_life> {
 //     }
 // }
 
-impl <'buf_life> TryFrom<&'buf_life [u8]> for Request<'buf_life> {
+impl<'buf_life> TryFrom<&'buf_life [u8]> for Request<'buf_life> {
     type Error = RequestError;
 
     fn try_from(buffer: &'buf_life [u8]) -> Result<Self, Self::Error> {
@@ -38,7 +39,7 @@ impl <'buf_life> TryFrom<&'buf_life [u8]> for Request<'buf_life> {
 
         if let Some((found_path, found_query)) = explode(path_and_query, '?') {
             path = found_path;
-            query = Some(found_query);
+            query = Some(Query::from(found_query));
         }
 
         Ok(Self {
@@ -52,7 +53,7 @@ impl <'buf_life> TryFrom<&'buf_life [u8]> for Request<'buf_life> {
 fn explode(text: &str, sep: char) -> Option<(&str, &str)> {
     for (index, letter) in text.chars().enumerate() {
         if letter == sep || letter == '\r' {
-            return Some((&text[..index - 1], &text[index + 1..]));
+            return Some((&text[..index], &text[index + 1..]));
         }
     }
     return None;
