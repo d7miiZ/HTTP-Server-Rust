@@ -1,4 +1,4 @@
-use crate::http::request;
+use crate::http::{request, response};
 use std::convert::TryFrom;
 use std::io::Read;
 use std::net::TcpListener;
@@ -23,13 +23,22 @@ impl Server {
                     match stream.read(&mut buffer) {
                         Ok(_) => {
                             println!("Request: {}", String::from_utf8_lossy(&buffer));
-                            match request::Request::try_from(&buffer[..]) {
+                            let response = match request::Request::try_from(&buffer[..]) {
                                 Ok(request) => {
                                     dbg!("{}", request);
+                                    response::Response::new(
+                                        response::Status::OK,
+                                        Some("<h1> Hi </h1>".to_string()),
+                                    )
                                 }
                                 Err(err) => {
-                                    println!("{}", err)
+                                    println!("{}", err);
+                                    response::Response::new(response::Status::BadRequest, None)
                                 }
+                            };
+
+                            if let Err(err) = response.send_response(&mut stream) {
+                                println!("{}", err);
                             }
                         }
                         Err(err) => {
