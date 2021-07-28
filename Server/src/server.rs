@@ -1,5 +1,6 @@
 use crate::http::{request, response};
 use std::convert::TryFrom;
+use std::fs;
 use std::io::Read;
 use std::net::TcpListener;
 
@@ -26,9 +27,11 @@ impl Server {
                             let response = match request::Request::try_from(&buffer[..]) {
                                 Ok(request) => {
                                     dbg!("{}", request);
+                                    let path = format!("{}/public/index.html", env!("CARGO_MANIFEST_DIR"));
+                                    let body = fs::read_to_string(path).expect("Failed to read file");
                                     response::Response::new(
                                         response::Status::OK,
-                                        Some("<h1> Hi </h1>".to_string()),
+                                        Some(body),
                                     )
                                 }
                                 Err(err) => {

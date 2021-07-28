@@ -9,3 +9,5 @@ src\http\request.rs:
 src\http\function.rs:
 src\http\query_map.rs:
 src\http\response.rs:
+
+# env-dep:CARGO_MANIFEST_DIR=c:\\Users\\Abdul\\Documents\\GitHub\\HTTP-Server-Rust\\Server
